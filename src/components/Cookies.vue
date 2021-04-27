@@ -1,0 +1,33 @@
+<template lang="pug">
+  .cookies
+    p Продолжая использовать наш сайт, вы даете согласие на обработку файлов cookie, пользовательских данных (сведения о местоположении; тип и версия ОС; тип и версия Браузера; тип устройства и разрешение его экрана; источник откуда пришел на сайт пользователь; с какого сайта или по какой рекламе; язык ОС и Браузера; какие страницы открывает и на какие кнопки нажимает пользователь; ip-адрес) в целях функционирования сайта, проведения ретаргетинга и проведения статистических исследований и обзоров. Если вы не хотите, чтобы ваши данные обрабатывались, покиньте сайт.
+    button.btn.btn_green.btn_centered(@click="setAgreement") Согласен
+</template>
+
+<script>
+import {eventBus} from '../main'
+export default {
+  name: 'Cookies',
+  methods: {
+    setAgreement(){
+      eventBus.$emit('setAgreement')
+      eventBus.$emit('close')
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+.cookies{
+  background-color: #fff;
+  padding: 20px;
+  // width: 90%;
+  // position: fixed;
+  // top: 50%;
+  // left: 5%;
+  // @media screen and (min-width: $desktop) {
+  //   width: 50%;
+  //   left: 25%;
+  // }
+}
+</style>
