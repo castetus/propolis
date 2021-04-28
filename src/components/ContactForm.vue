@@ -14,13 +14,12 @@
           label.form__label(for="message") Ваше сообщение
           textarea.form__field.form__field_green.form__textarea(placeholder="ваше сообщение")
       .form__text Нажимая на кнопку, вы даете согласие на обработку персональных данных и соглашаетесь c 
-        a политикой конфиденциальности
+        a.link_underlined(@click="openPolicy") политикой конфиденциальности
       input.form__btn.btn.btn_green.btn_centered(type="submit" value="отправить" @click.prevent="sendForm") 
 </template>
 
 <script>
-import {required} from 'vuelidate/lib/validators'
-import { sameAs } from 'vuelidate/lib/validators'
+import {required, sameAs} from 'vuelidate/lib/validators'
 import { eventBus } from '../main'
 const checkPhone = (value) => /^\+?\d{11,11}$/.test(value)
 export default {
@@ -29,17 +28,17 @@ export default {
     return {
       name: '',
       phone: '',
-      agreement: false,
-      url: window.location.origin + '/mailer.php'
     }
   },
   validations: {
     name: {required: required},
     phone: {required, checkPhone},
-    agreement: {sameAs: sameAs( () => true )}
   },
   methods: {
-    async sendForm() {
+    openPolicy(){
+      eventBus.$emit('openPolicy')
+    },
+    sendForm() {
         this.$v.$touch()
         if (this.$v.$error){
           return
@@ -49,7 +48,7 @@ export default {
           content: [
           {
             "name": "Сделка от " + this.name,
-            "pipeline_id":4171915,
+            "pipeline_id":4223722,
             "_embedded":{
               "contacts":[
                   {
@@ -70,9 +69,7 @@ export default {
           }
         ]
         } 
-      
-        eventBus.$emit('sendForm', JSON.stringify(data))
-      
+        eventBus.$emit('sendForm', data)
     },
     reset() {
       this.$v.$reset()

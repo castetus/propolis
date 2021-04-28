@@ -15,8 +15,8 @@
         .footer__block
           .footer__contacts-wrapper
             contacts
-            span.footer__copyright (c) Телемед 2021
-    .container
+    //- .container
+    //-   span.text_green.text_center (c) Прополис 2021
       
 </template>
 

@@ -8,7 +8,7 @@
             .about__item(:class="'about__item_' + (index + 1)"  ref="slide")
               .about__number-field(:class="'about__number-field_' + (index + 1)")
                 span.about__number {{item.number}}
-              .about__icon
+              img.about__icon(:src="bgPath(index + 1)" :class="'about__icon_' + (index + 1)")
               .about__content(:class="'about__content_' + (index + 1)")
                 h4.about__title {{item.title}}
                 p.about__text {{item.text}}
@@ -26,7 +26,7 @@ export default {
         {
           title: 'В 2 раза дешевле',
           text: 'Специалист по ипотечному страхованию оформит для вас полис в 2 раза дешевле, чем в Сбербанке',
-          number: '01'
+          number: '01',
         },
         {
           title: 'ТОП-10',
@@ -63,6 +63,11 @@ export default {
         loop: true
       })
   },
+  methods: {
+    bgPath(id){
+      return require(`../assets/img/icon_${id}.svg`)
+    }
+  }
 }
 </script>
 
@@ -103,6 +108,34 @@ export default {
       }
       &_4 {
         order: 1;
+      }
+    }
+    &__icon{
+      position: absolute;
+      width: 50px;
+      height: 40px;
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      @media screen and (min-width: $tablets){
+        width: 60px;
+        height: 50px;
+      }
+      &_1{
+        bottom: 10%;
+        left: 30%;
+      }
+      &_2{
+        bottom: 10%;
+        right: 30%;
+      }
+      &_3{
+        top: 10%;
+        left: 30%;
+      }
+      &_4{
+        top: 10%;
+        right: 30%;
       }
     }
     &__number-field{

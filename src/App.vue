@@ -22,7 +22,7 @@
     <partners></partners>
     <payment></payment>
     <team></team>
-    <testimonials></testimonials>
+    <!-- <testimonials></testimonials> -->
     <faq></faq>
     <div class="block_white">
       <div class="container">
@@ -33,7 +33,7 @@
     <app-footer></app-footer>
     <div class="popup" :class="{popup_visible : isPopupVisible}">
       <button class="btn btn_close" @click="popupClose"></button>
-      <component :is="component"></component>
+      <component :is="component" :images="images"></component>
     </div>
     <div class="mask" :class="{mask_visible: isMaskVisible}" @click="popupClose"></div>
   </div>
@@ -51,13 +51,15 @@ import BigForm from './components/BigForm.vue'
 import Partners from './components/Partners.vue'
 import Payment from './components/Payment.vue'
 import Team from './components/Team.vue'
-import Testimonials from './components/Testimonials.vue'
+// import Testimonials from './components/Testimonials.vue'
 import Faq from './components/Faq.vue'
 import ContactForm from './components/ContactForm.vue'
 import AppFooter from './components/Footer.vue'
 import Thankyou from './components/Thankyou'
 import ThankyouBig from './components/ThankyouBig'
 import ThankyouCalc from './components/ThankyouCalc'
+import Policy from './components/Policy'
+import Licence from './components/Licence'
 
 export default {
   name: 'App',
@@ -72,19 +74,22 @@ export default {
     Partners,
     Payment,
     Team,
-    Testimonials,
+    // Testimonials,
     Faq,
     ContactForm,
     AppFooter,
     Thankyou,
     ThankyouBig,
     ThankyouCalc,
+    Policy,
+    Licence
   },
   data() {
     return {
       isPopupVisible: false,
       isMaskVisible: false,
       component: null,
+      images: [],
       emailUrl: window.location.origin + '/mailer.php',
       apiUrl: window.location.origin + '/intApi.php',
     }
@@ -94,24 +99,37 @@ export default {
       this.popupOpen(elem)
     })
     eventBus.$on('showLicence', (number) => {
-      console.log(number)
+      this.images = [
+        this.getImgPath(number, 1),
+        this.getImgPath(number, 2),
+      ]
+      this.popupOpen('Licence')
     })
     eventBus.$on('sendCalc', (data) => {
       this.sendCalc(data)
     })
     eventBus.$on('sendForm', (data) => {
+      console.log(data)
       this.sendForm(data)
+    })
+    eventBus.$on('openPolicy', () => {
+      this.popupOpen('Policy')
     })
   },
   methods: {
+    getImgPath(index, i){
+      return require('./assets/img/licence_' + index + '_' + i + '.jpg')
+    },
     popupOpen(elem){
       this.isPopupVisible = true
       this.isMaskVisible = true
       this.component = elem
     },
     popupClose(){
+      this.images = []
       this.isPopupVisible = false
       this.isMaskVisible = false
+      eventBus.$emit('destroyLicence')
     },
     async sendCalc(data){
       try {
@@ -120,7 +138,8 @@ export default {
           body: JSON.stringify(data)
         })
         const result = await request.text()
-        if (result.ok){
+        if (request.ok){
+          console.log(result)
           this.popupOpen('ThankyouCalc')
         }
       } catch (error) {
@@ -128,21 +147,25 @@ export default {
       }
     },
     async sendForm(data){
+      let elem = 'Thankyou'
+      if (data.type === 'big'){
+        elem = 'ThankyouBig'
+      }
       try {
         const request = await fetch(this.apiUrl, {
           method: 'POST',
-          body: data
+          body: JSON.stringify(data.content)
         })
         const result = await request.text()
-        if (result.ok){
-          this.popupOpen('Thankyou')
+        if (request.ok){
+          console.log(result)
+          this.popupOpen(elem)
         }
       } catch (error) {
         console.log(error)
       }
     }
   }
-  
 }
 </script>
 
@@ -217,9 +240,10 @@ export default {
   display: none;
   position: fixed;
   width: 590px;
-  width: 90%;
+  max-width: 90%;
   left: 5%;
   top: 10%;
+  max-height: 80vh;
   padding: 20px;
   background-color: #fff;
   border-radius: 5px;
@@ -234,7 +258,7 @@ export default {
     left: 5%!important;
     top: 5%;
   }
-  @media screen and(min-width: 650px) {
+  @media screen and (min-width: 650px) {
     .popup{
       left: calc(50vw - 295px);
     }
@@ -246,6 +270,12 @@ export default {
     height: 100%;
     top: 0;
     z-index: 490;
+  }
+  .link_underlined{
+    cursor: pointer;
+  }
+  .thankyou{
+    padding-top: 30px;
   }
 
 </style>

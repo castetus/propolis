@@ -102,7 +102,7 @@
       v-model="phone">
     </text-input>
     <div class="form__text">Нажимая на кнопку, вы даете согласие на обработку персональных данных и соглашаетесь c  
-        <a href="" class="link_underlined">политикой конфиденциальности</a> 
+        <a @click="openPolicy" class="link_underlined">политикой конфиденциальности</a> 
     </div>
     <input type="submit" class="btn btn_green btn_centered form__btn" value="оформить онлайн" @click="sendForm">
   </div>
@@ -188,178 +188,161 @@ export default {
         this.objectAddress = this.registerAddress
       }
     },
+    openPolicy(){
+      eventBus.$emit('openPolicy')
+    },
     sendForm() {
       this.validate()
 
       if (!this.correctData){
         return
       }
-      const data = 
-       {
-      type: "big",
-      content: {
-      "name": "Сделка от " + this.fields.name,
-      "price": this.calculateSum(),
-      "pipeline_id":4171915,
-      "_embedded":{
-        "contacts":[
-            {
-              "name": this.fields.name,
-              // "first_name": firstForm.fields.name,
-              // "last_name": firstForm.fields.surName,
-              "custom_fields_values":[
-                  {
-                    "field_id":829811,
-                    "values":[
+      const data = {
+        type: "big",
+        content: [
+          {
+            "name": "Сделка от " + this.name,
+            "pipeline_id":4223722,
+                  "_embedded":{
+                    "contacts":[
                         {
-                          "value": firstForm.phone,
+                          "name": this.name,
+                          "custom_fields_values":[
+                              {
+                                "field_id":829811,
+                                "values":[
+                                    {
+                                      "value": this.phone,
+                                    }
+                                ]
+                              },
+                              {
+                                "field_id":829813,
+                                "values":[
+                                    {
+                                      "value": this.email,
+                                    }
+                                ]
+                              }
+                          ]
                         }
-                    ]
+                    ],
+                  },
+                  "custom_fields_values":[
+                  {
+                      "field_id": 1062177,
+                      "field_name": "Дата договора",
+                      "values": [
+                          {
+                              "value": this.$preparedData(this.contractDate)
+                          }
+                      ]
                   },
                   {
-                    "field_id":829813,
-                    "values":[
-                        {
-                          "value": firstForm.email,
-                        }
-                    ]
-                  }
-              ]
-            }
-        ],
-      },
-      "custom_fields_values":[
-      {
-          "field_id": 1056649,
-          "field_name": "Дата договора",
-          "values": [
-              {
-                  "value": this.$preparedData(this.fields.contractDate)
-              }
-          ]
-      },
-      {
-          "field_id": 1056647,
-          "field_name": "Сумма кредита",
-          "values": [
-              {
-                  "value": this.fields.contractNumber
-              }
-          ]
-      },
-      {
-          "field_id": 1056655,
-          "field_name": "Адрес объекта",
-          "values": [
-              {
-                  "value": this.fields.objectAddress
-              }
-          ]
-      },
-      {
-          "field_id": 912891,
-          "field_name": "Дата рождения",
-          "values": [
-              {
-                  "value": this.$preparedData(this.fields.birthPlace)
-              }
-          ]
-      },
-      {
-          "field_id": 844217,
-          "field_name": "Адрес регистрации",
-          "values": [
-              {
-                  "value": this.fields.registerAddress
-              }
-          ]
-      },
-      {
-          "field_id": 844207,
-          "field_name": "Паспорт серия",
-          "values": [
-              {
-                  "value": this.fields.passportNumber.serie
-              }
-          ]
-      },
-      {
-          "field_id": 844209,
-          "field_name": "Паспорт номер",
-          "values": [
-              {
-                  "value": this.fields.passportNumber.number
-              }
-          ]
-      },
-      {
-          "field_id": 844215,
-          "field_name": "Код подразделения",
-          "values": [
-              {
-                  "value": this.fields.passportCode
-              }
-          ]
-      },
-      {
-          "field_id": 844211,
-          "field_name": "Дата паспорта",
-          "values": [
-              {
-                  "value": this.$preparedData(this.fields.passportDate)
-              }
-          ]
-      },
-      {
-          "field_id": 844213,
-          "field_name": "Паспорт кем выдан",
-          "values": [
-              {
-                  "value": this.fields.passportEmitter
-              }
-          ]
-      },
-      {
-          "field_id": 844205,
-          "field_name": "Пол",
-          "values": [
-              {
-                  "value": this.fields.gender
-              }
-          ]
-      },
-      {
-          "field_id": 844203,
-          "field_name": "Место рождения",
-          "values": [
-              {
-                  "value": this.fields.birthPlace
-              }
-          ]
-      },
-      // {
-      //     "field_id": 844323,
-      //     "field_name": "Имя",
-      //     "values": [
-      //         {
-      //             "value": this.forms[i].fields.name
-      //         }
-      //     ]
-      // },
-      // {
-      //     "field_id": 844325,
-      //     "field_name": "Отчество",
-      //     "values": [
-      //         {
-      //             "value": this.forms[i].fields.patrName
-      //         }
-      //     ]
-      // }
-      ],
-    }
-  }
-
-      eventBus.$emit('sendForm', JSON.stringify(data))
+                      "field_id": 1056647,
+                      "field_name": "Сумма кредита",
+                      "values": [
+                          {
+                              "value": this.contractNumber
+                          }
+                      ]
+                  },
+                  {
+                      "field_id": 1056655,
+                      "field_name": "Адрес объекта",
+                      "values": [
+                          {
+                              "value": this.objectAddress
+                          }
+                      ]
+                  },
+                  {
+                      "field_id": 912891,
+                      "field_name": "Дата рождения",
+                      "values": [
+                          {
+                              "value": this.$preparedData(this.birthPlace)
+                          }
+                      ]
+                  },
+                  {
+                      "field_id": 844217,
+                      "field_name": "Адрес регистрации",
+                      "values": [
+                          {
+                              "value": this.registerAddress
+                          }
+                      ]
+                  },
+                  {
+                      "field_id": 844207,
+                      "field_name": "Паспорт серия",
+                      "values": [
+                          {
+                              "value": this.passportNumber.serie
+                          }
+                      ]
+                  },
+                  {
+                      "field_id": 844209,
+                      "field_name": "Паспорт номер",
+                      "values": [
+                          {
+                              "value": this.passportNumber.number
+                          }
+                      ]
+                  },
+                  {
+                      "field_id": 844215,
+                      "field_name": "Код подразделения",
+                      "values": [
+                          {
+                              "value": this.passportCode
+                          }
+                      ]
+                  },
+                  {
+                      "field_id": 844211,
+                      "field_name": "Дата паспорта",
+                      "values": [
+                          {
+                              "value": this.$preparedData(this.passportDate)
+                          }
+                      ]
+                  },
+                  {
+                      "field_id": 844213,
+                      "field_name": "Паспорт кем выдан",
+                      "values": [
+                          {
+                              "value": this.passportEmitter
+                          }
+                      ]
+                  },
+                  {
+                      "field_id": 844205,
+                      "field_name": "Пол",
+                      "values": [
+                          {
+                              "value": this.gender
+                          }
+                      ]
+                  },
+                  {
+                      "field_id": 844203,
+                      "field_name": "Место рождения",
+                      "values": [
+                          {
+                              "value": this.birthPlace
+                          }
+                      ]
+                  },
+                ],
+          }
+        ]
+      }
+      console.log(data)
+      eventBus.$emit('sendForm', data)
     }
   }
 }

@@ -145,11 +145,11 @@ function getRefreshToken($token){
 
   /** Соберем данные для запроса */
   $data = [
-    'client_id' => 'a4062242-d0a7-4006-a37b-573aaa737c9c',
-    'client_secret' => '9MoTrYQLqm5gmOk88ZYx0iH0a28EO74i6huVhRrKBx0S8tcBWW6HdP8DytZwZWH7',
+    'client_id' => '8b9620fe-6b3f-43be-b787-d0da3d2d1050',
+    'client_secret' => 'wSOVPn4LakRYmVxFtzX2TGvlj3lDy4yxRN2DwGn4j93PKzp3dYeUOBts8OBooIJw',
     'grant_type' => 'refresh_token',
     'refresh_token' => $token,
-    'redirect_uri' => 'https://med-tele.ru/',
+    'redirect_uri' => 'https://pro-policy.ru/',
   ];
   /**
    * Нам необходимо инициировать запрос к серверу.

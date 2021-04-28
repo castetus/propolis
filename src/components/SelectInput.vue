@@ -36,6 +36,10 @@ export default {
       value: {
         type: String,
         default: ''
+      },
+      location: {
+        type: String,
+        default: ''
       }
     },
     data(){
@@ -56,12 +60,20 @@ export default {
       validate() {
         this.$v.$touch()
         if (this.$v.$error) {
-          eventBus.$emit("validationError", this.$v.$error)
+          if (this.location !== 'calc'){
+            eventBus.$emit("validationError", this.$v.$error)
+          } else {
+            eventBus.$emit("calcValidationError", this.$v.$error)
+          }
         }
       },
       reset() {
         this.$v.$reset()
-        eventBus.$emit('validationError', this.$v.$error)
+          if (this.location !== 'calc'){
+            eventBus.$emit("validationError", this.$v.$error)
+          } else {
+            eventBus.$emit("calcValidationError", this.$v.$error)
+          }
       }
     },
   }

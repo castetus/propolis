@@ -1,13 +1,15 @@
 <template lang="pug">
       ul.contacts 
         li.contacts__item.contacts__item_phone
-          a.link(href="tel:+78003331257") 8 800 333-12-57
-        li.contacts__item
-          | Бесплатный звонок
+          a.link(href="tel:+78003334749") 8 800 333-47-49
+        li.contacts__item.contacts__item_thin
+          //- span ООО "СБ ТУР"
+          //- br
+          span ИНН: 7814776170
           br
-          | по России
-        //- li.contacts__item.contacts__item_insta
-        //-   a.link(href="") meditel
+          span ОГРН: 1207800065252
+          br
+          span Санкт-Петербург, ул. Большая Пушкарская, д.17, оф.3
 </template>
 
 <script>
@@ -33,14 +35,17 @@ export default {
     margin-bottom: 5px;
     &_phone {
       padding-left: 21px;
-      &:before {
+      & .link{
+        position: relative;
+        &:before {
         content: "";
         background: url("~@/assets/img/icons/call.svg") center no-repeat;
         background-size: contain;
         position: absolute;
-        left: 2px;
+        left: -20px;
         width: 15px;
         height: 15px;
+      }
       }
     }
     &_insta {
@@ -58,6 +63,9 @@ export default {
           left: 60px;
         }
       }
+    }
+    &_thin{
+      font-weight: 400;
     }
   }
   @media screen and (min-width: $tablets) {

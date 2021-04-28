@@ -2,8 +2,8 @@
   .swiper-container.policy 
     .swiper-wrapper 
       img.swiper-slide(v-for="index in 6" :key="index" :src="getImgPath(index)", alt="")
-    .slider-button-prev 
-    .slider-button-next
+    .slider-button.slider-button_prev.main-slider__prev
+    .slider-button.slider-button_next.main-slider__next
 </template>
 
 <script>
@@ -21,8 +21,8 @@ export default {
       const policySlider = new Swiper('.policy', {
         loop: true,
         navigation: {
-          nextEl: '.slider-button-next',
-          prevEl: '.slider-button-prev',
+          nextEl: '.slider-button_next',
+          prevEl: '.slider-button_prev',
         },
       })
     }, 200);

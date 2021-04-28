@@ -5,7 +5,13 @@
         logo
         .header__cta 
           a.btn.btn_outlined.btn_centered.btn_popup(data-target="#popup-form" @click="popupOpen('ContactForm')") заказать полис
-        contacts
+        ul.contacts 
+          li.contacts__item.contacts__item_phone
+            a.link(href="tel:+78003334749") 8 800 333-47-49
+          li.contacts__item
+            | Бесплатный звонок
+            br
+            | по России
         button.header__menu-button#dropdown(@click="menuOpen")
 </template>
 

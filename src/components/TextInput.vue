@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { required, email } from "vuelidate/lib/validators"
+import { required, email, integer } from "vuelidate/lib/validators"
 import { eventBus } from "../main"
 
 export default {
@@ -41,6 +41,10 @@ export default {
       type: null,
       default: null,
     },
+    location: {
+      type: String,
+      default: ''
+    }
   },
   data() {
     return {
@@ -63,6 +67,10 @@ export default {
         return {
           value: {required, email}
         }
+      case 'debt':
+        return {
+          value: {required, integer}
+        }
       default:
         return {
           value: { required: required },
@@ -72,8 +80,10 @@ export default {
   methods: {
     validate() {
       this.$v.$touch()
-      if (this.$v.$error) {
+      if (this.$v.$error && this.location !== 'calc') {
         eventBus.$emit("validationError", this.$v.$error)
+      } else {
+        eventBus.$emit("calcValidationError", this.$v.$error)
       }
     },
     reset() {

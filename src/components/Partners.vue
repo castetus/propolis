@@ -4,10 +4,9 @@
       .heading.heading_orange наши ПАРТНЕРЫ
       .partners.swiper-container
         .swiper-wrapper
-          - for (var i = 1; i <= 8; i++)
-            .partners__item.swiper-slide
-              a.partners__link(@click="popupOpen(i)")
-                img(src="~@/assets/img/partners_" + i +".jpg")
+            .partners__item.swiper-slide(v-for="i in 8" :key="i")
+              a.partners__link(@click="showLicence(i)")
+                img(:src="path(i)")
         .swiper-pagination(slot="pagination")
         .slider-button.slider-button_prev.slider-button_prev_green.partners__prev
         .slider-button.slider-button_next.slider-button_next_green.partners__next
@@ -47,7 +46,10 @@ export default {
     })
   },
   methods: {
-    popupOpen(i) {
+    path(index) {
+      return require(`../assets/img/partners_${index}.jpg`)
+    },
+    showLicence(i) {
       eventBus.$emit('showLicence', i)
     }
   }
