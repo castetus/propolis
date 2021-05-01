@@ -5,6 +5,7 @@
     <main-slider></main-slider>
     <about></about>
     <opps></opps>
+    <partners></partners>
     <div class="block_white" id="calculator">
       <div class="container">
         <h2 class="heading heading_green">Калькулятор</h2>
@@ -14,12 +15,13 @@
     <div class="block_pink" id="big-form">
       <div class="container">
         <h2 class="heading heading_green">оформление страхового полиса</h2>
-        <div class="big-form__wrapper">
+        <button class="btn btn_centered btn_green" v-if="!isForm" @click="isForm = !isForm">заполнить форму</button>
+        <div v-if="isForm" class="big-form__wrapper">
           <big-form></big-form>
         </div>
       </div>
     </div>
-    <partners></partners>
+    
     <payment></payment>
     <team></team>
     <!-- <testimonials></testimonials> -->
@@ -51,7 +53,7 @@ import BigForm from './components/BigForm.vue'
 import Partners from './components/Partners.vue'
 import Payment from './components/Payment.vue'
 import Team from './components/Team.vue'
-// import Testimonials from './components/Testimonials.vue'
+import Testimonials from './components/Testimonials.vue'
 import Faq from './components/Faq.vue'
 import ContactForm from './components/ContactForm.vue'
 import AppFooter from './components/Footer.vue'
@@ -74,7 +76,7 @@ export default {
     Partners,
     Payment,
     Team,
-    // Testimonials,
+    Testimonials,
     Faq,
     ContactForm,
     AppFooter,
@@ -90,6 +92,7 @@ export default {
       isMaskVisible: false,
       component: null,
       images: [],
+      isForm: false,
       emailUrl: window.location.origin + '/mailer.php',
       apiUrl: window.location.origin + '/intApi.php',
     }
@@ -103,6 +106,15 @@ export default {
         this.getImgPath(number, 1),
         this.getImgPath(number, 2),
       ]
+      eventBus.$emit('licencePath', this.images)
+      this.popupOpen('Licence')
+    })
+    eventBus.$on('showAllLicences', () => {
+      for (let i = 1; i < 8; i++){
+        this.images.push(this.getImgPath(i, 1))
+        this.images.push(this.getImgPath(i, 2))
+      }
+      eventBus.$emit('licencePath', this.images)
       this.popupOpen('Licence')
     })
     eventBus.$on('sendCalc', (data) => {

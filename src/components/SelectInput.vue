@@ -48,7 +48,11 @@ export default {
       }
     },
     mounted() {
-      eventBus.$on("proceed", this.validate)
+      eventBus.$on("proceedCalc", () => {
+        if (this.location === 'calc'){
+          this.validate()
+        }
+      })
     },
     beforeDestroy(){
       eventBus.$off("proceed", this.validate)

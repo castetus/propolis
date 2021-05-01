@@ -53,10 +53,12 @@ export default {
         padding: 17px 106px;
         flex-direction: row-reverse;
         flex-wrap: wrap;
+        align-items: flex-start;
       }
     }
     &__img-block{
       display: flex;
+      height: 324px;
       @media screen and (min-width: $tablets){
         flex-basis: 50%;
       }
@@ -64,6 +66,7 @@ export default {
     &__avatar{
       width: 100%;
       object-fit: cover;
+      object-position: top;
       margin: 16px auto;
     }
     &__content{
@@ -77,13 +80,19 @@ export default {
     &__position{
       text-align: center;
       font-size: 24px;
+      // margin: 0;
       @media screen and (min-width: $tablets){
         font-size: 36px;
+        margin: 16px 0 0;
+        text-align: left;
       }
     }
     &__name{
       text-align: center;
       font-size: 18px;
+      @media screen and (min-width: $tablets){
+        text-align: left;
+      }
     }
     &__text{
       font-size: 14px;

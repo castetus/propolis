@@ -9,7 +9,7 @@
             li.footer__menu-item 
               a.footer__menu-link.link.btn_popup(@click.prevent="open('Policy')") Политика конфиденциальности
             li.footer__menu-item 
-              a.footer__menu-link.link.btn_popup(@click.prevent="open('Licence')") Лицензия
+              a.footer__menu-link.link.btn_popup(@click.prevent="showLicences") Лицензия
           h6.footer__title Мы работаем со всеми регионами России
           p.footer__text Внимание! Данный сайт носит исключительно информационный характер и не является публичной офертой, определяемой положениями Статьи 437 Гражданского Кодекса РФ. (с) 2017-2021
         .footer__block
@@ -31,6 +31,9 @@ export default {
   methods: {
     open(elem){
       eventBus.$emit('popupOpen', elem)
+    },
+    showLicences(){
+      eventBus.$emit('showAllLicences')
     }
   }
 }

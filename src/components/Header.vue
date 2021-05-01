@@ -12,6 +12,8 @@
             | Бесплатный звонок
             br
             | по России
+          li.contacts__item.contacts__item_email
+            a.link(href="mailto:info@pro-policy.ru") info@pro-policy.ru
         button.header__menu-button#dropdown(@click="menuOpen")
 </template>
 

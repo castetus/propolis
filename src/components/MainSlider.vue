@@ -61,6 +61,9 @@ export default {
             prevEl: '.main-slider__prev',
           },
           loop: true,
+           autoplay: {
+            delay: 2500,
+          },
     })
   },
   methods: {

@@ -4,10 +4,15 @@
       h3.calculator__title Рассчитаем и оформим полис для клиентов любого банка. Просто оставьте заявку!
       a.btn.btn_orange.btn_centered(@click="popupOpen('ContactForm')") обратный звонок
     .calculator__inner-block
-      select-input(label-text="Выберите банк" inputName="bank" :options="data.banks" v-model="bank" location="calc")
-      //- .input-error(v-if="$v.bank.$dirty && $v.bank.$invalid") выберите опцию
-      text-input(label-text="Остаток по кредиту" inputName="debt" v-model="debt" location="calc")
-      //- .input-error(v-if="$v.debt.$dirty && $v.debt.$invalid") заполните это поле
+      .input-block
+        label(for="bank") Выберите банк
+        select(name="bank" v-model="bank")
+          option(v-for="bank in data.banks" :value="bank.value") {{bank.label}}
+        .input-error(v-if="$v.bank.$dirty && $v.bank.$invalid") выберите опцию
+      .input-block
+        label(for="debt") Сумма кредита
+        input(type="number" name="debt" v-model="debt")
+        .input-error(v-if="$v.debt.$dirty && $v.debt.$invalid") заполните это поле
       h3 Право собственности получено?
       .input-block
         .input
@@ -22,12 +27,16 @@
         .input
           input(type="checkbox" name="life" id="life" v-model="life" @change="$v.life.$touch()")
           label(for="life") Жизнь
-        .input()
+        .input
           input(type="checkbox" :disabled="!isProperty" name="property" id="property" v-model="property" @change="$v.property.$touch()" )
           label(for="property") Имущество
+        .input( v-if="showTitle")
+          input(type="checkbox" name="title" id="title" v-model="title" @change="$v.title.$touch()")
+          label(for="title") Титул
         .input-error(v-if="($v.life.$dirty && $v.life.$invalid) || ($v.property.$dirty && $v.property.$invalid)") отметьте хотя бы одну опцию
-      h3(v-if="life") Пол заемщика
+      h3(v-if="life") Заемщик
       .input-block(v-if="life")
+        label Пол заемщика
         .input
           input(type="radio" name="gender" id="genderMale" v-model="gender" value="male" @change="$v.gender.$touch()")
           label(for="genderMale") Муж
@@ -38,10 +47,12 @@
       date-input(v-if="life" label-text="Дата рождения" inputName="birthDate" v-model="birthDate")
       .form__text Нажимая на кнопку, вы даете согласие на обработку персональных данных и соглашаетесь c 
         a.link_underlined(@click="openPolicy") политикой конфиденциальности
-      input.btn.btn_centered.btn_outlined_green.form__btn(type="submit" value="рассчитать стоимость" @click="calculate") 
+      a.btn.btn_centered.btn_outlined_green.form__btn(@click.prevent="calculate") рассчитать стоимость
       .calculator__result(ref="result")
       .calculator__result-block(v-if="resultText")
-        text-input(label-text="Введите адрес почты" inputName="email" v-model="email" location="calc")
+        .input-block
+          label(for="email") Ваша почта
+          input(v-model="email" name="email")
         .input-error(v-if="$v.email.$dirty && $v.email.$invalid") Введите адрес почты
         a.btn.btn_orange.btn_centered(@click="sendResult") Сохранить результат
 </template>
@@ -51,23 +62,15 @@ import {required, email, integer} from "vuelidate/lib/validators"
 import {eventBus} from '../main'
 import {store} from '../store'
 import DateInput from './DateInput'
-import TextInput from './TextInput'
-import SelectInput from './SelectInput'
-import RadioInput from './RadioInput'
-import CheckboxGroup from './CheckboxGroup'
 export default {
   name: 'Calculator',
   components: {
     DateInput,
-    TextInput,
-    SelectInput,
-    RadioInput,
-    CheckboxGroup
   },
   data() {
     return {
       bank: null,
-      debt: '',
+      debt: null,
       isProperty: false,
       birthDate: {
         day: '',
@@ -77,25 +80,34 @@ export default {
       },
       property: false,
       life: false,
+      title: false,
       gender: '',
       email: '',
       correctData: true,
       resultText: '',
       data: store,
       sberEstateRate: 0.00225,
+      checkEmail: false,
     }
-  },
-  mounted(){
-    // eventBus.$on('calcValidationError', (error) => {
-    //   this.correctData = !error
-    // })
   },
   validations() {
     return {
-      life: this.property ? {} : { required: v => v },
-      property: this.life ? {} : { required: v => v },
+      bank: {required},
+      debt: {required, integer},
+      life: this.property || this.title ? {} : { required: v => v },
+      property: this.life || this.title ? {} : { required: v => v },
+      title: this.life || this.property ? {} : { required: v => v },
       gender: this.life ? {required: required} : {},
-      email: this.resultText ? {email, required} : {}
+      email: this.checkEmail ? {email, required} : {}
+    }
+  },
+  computed: {
+    showTitle(){
+      if (this.bank && this.bank != 19){
+        return true
+      }
+      this.title = false
+      return false
     }
   },
   methods: {
@@ -107,13 +119,7 @@ export default {
     },
     validate() {
       this.$v.$touch()
-      if (this.$v.$error) {
-        console.log('error', this.$v.$error)
-        eventBus.$emit("calcValidationError", this.$v.$error)
-        this.correctData = !this.$v.$error
-      } else {
-        this.correctData = true
-      }
+      this.correctData = !this.$v.$error
     },
     reset() {
       this.$v.$reset()
@@ -138,6 +144,9 @@ export default {
       const age = this.calculateAge()
       const rates = []
       this.data.insCompanies.forEach((company) => {
+        if (!company.banks[this.bank]){
+          return
+        }
         let companyRate = company.banks[this.bank].life
         if (typeof companyRate !== 'undefined'){
           let ageRate = this.data.rates[companyRate][age]
@@ -148,22 +157,35 @@ export default {
           rates.push({company: company.label, rate: Math.round(singleRate * this.debt)})
         }
       })
-      console.log(rates)
       return rates
     },
     calculatePropertyCost(){
       const rates = []
       this.data.insCompanies.forEach(company => {
-        let singleRate = company.banks[this.bank].estate
-        if (typeof singleRate !== 'undefined'){
-          rates.push({company: company.label, rate: Math.round(singleRate * this.debt)})
+        
+        if (company.banks[this.bank]){
+          let singleRate = company.banks[this.bank].estate
+          if (typeof singleRate !== 'undefined'){
+            rates.push({company: company.label, rate: Math.round(singleRate * this.debt)})
+          }
         }
       })
-      console.log(rates)
+      return rates
+    },
+    calculateTitleCost(){
+      const rates = []
+      this.data.insCompanies.forEach(company => {
+        if (company.banks[this.bank]){
+          let singleRate = company.banks[this.bank].title
+          if (typeof singleRate !== 'undefined'){
+            rates.push({company: company.label, rate: Math.round(singleRate * this.debt)})
+          }
+        }
+      })
       return rates
     },
     calculate() {
-      eventBus.$emit('proceed')
+      this.checkEmail = false
       this.validate()
       if (!this.correctData){
         console.log('!correct')
@@ -180,43 +202,78 @@ export default {
 
       let lifeString = ''
       let propertyString = ''
-      let wholeLife = 0
-      let wholeProperty = 0
+      let titleString = ''
+      let summary = {}
       let wholeRisksString = '<p><span class="text_green"><b>Итого по всем рискам:</b></span></p>'
+
+      let insuranseSum = this.debt
+      if (this.bank !== '19'){
+        insuranseSum = Math.floor(insuranseSum * 1.1)
+      }
 
       if (this.life){
         lifeString += '<p><span class="text_green"><b>Страхование жизни:</b></span></p>'
         this.calculateLifeCost().forEach((rate) => {
+          let currency = ' руб.'
           if (rate.rate === 0){
             rate.rate = 'Страхование невозможно'
+            currency = ''
           }
-          const result = `<p>${rate.company}: <b>${rate.rate}</b> руб.</p>`
-          if (typeof rate.rate === 'Number'){
-            wholeLife = wholeLife + rate.rate
+          const result = `<p>${rate.company}: <b>${rate.rate}</b> ${currency}</p>`
+          if (!isNaN(rate.rate)){
+            if (!summary[rate.company]){
+              summary[rate.company] = rate.rate
+            } else {
+              summary[rate.company] += rate.rate
+            }
           }
           lifeString += result
         })
-        let sberString = this.calculateSberLifeCost() === 0 ? 'Сбер: Страхование невозможно' : `<p>Сбер: <b>${this.calculateSberLifeCost()}</b> руб.`
-        lifeString += sberString
+        if (this.bank == 19){
+          let sberString = this.calculateSberLifeCost() === 0 ? 'Сбер: <b>Страхование невозможно</b>' : `<p>Сбер: <b>${this.calculateSberLifeCost()}</b> руб.`
+          lifeString += sberString
+          summary.Сбербанк = this.calculateSberLifeCost()
+        }
       }
       if (this.property){
         propertyString += '<p><span class="text_green"><b>Страхование имущества:</b></span></p>'
         this.calculatePropertyCost().forEach((rate) => {
           const result = `<p>${rate.company}: <b>${rate.rate}</b> руб.</p>`
           propertyString += result
-          wholeProperty = wholeProperty + rate.rate
+            if (!summary[rate.company]){
+              summary[rate.company] = rate.rate
+            } else {
+              summary[rate.company] += rate.rate
+            }
         })
-        propertyString += `<p>Сбер: <b>${this.calculateSberPropertyCost()}</b> руб.`
+        if (this.bank == 19){
+          propertyString += `<p>Сбер: <b>${this.calculateSberPropertyCost()}</b> руб.`
+          summary.Сбербанк += this.calculateSberPropertyCost()
+        }
+      }
+      if (this.title){
+        titleString += '<p><span class="text_green"><b>Страхование титула:</b></span></p>'
+        this.calculatePropertyCost().forEach((rate) => {
+          const result = `<p>${rate.company}: <b>${rate.rate}</b> руб.</p>`
+          titleString += result
+        })
       }
 
+      const insuranseSumString = `<p>Страховая сумма по требованию банка: <b>${insuranseSum}</b> руб.</p>`
+
+      if (Object.keys(summary).length !== 0){
+        for (let company in summary){
+          wholeRisksString += `<p>${company}: <b>${summary[company]}</b> руб.</p>`
+        }
+      }
       
-      
-      this.resultText = lifeString + propertyString
+      this.resultText = insuranseSumString + lifeString + propertyString + titleString + wholeRisksString
       this.$refs.result.innerHTML = this.resultText
     },
     sendResult(){
-      this.$v.$touch()
-      if (!this.email){
+      this.checkEmail = true
+      this.$v.email.$touch()
+      if (this.$v.email.$invalid){
         return
       }
       const calcData = {
@@ -248,6 +305,9 @@ export default {
       margin: 0 auto 17px;
       text-align: center;
       color: $color-grey;
+    }
+    &__result-block{
+      position: relative;
     }
   }
 </style>

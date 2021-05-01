@@ -52,7 +52,14 @@ export default {
     }
   },
   mounted() {
-    eventBus.$on("proceed", this.validate)
+    eventBus.$on('proceed', () => {
+      this.validate()
+    })
+    eventBus.$on("proceedCalc", () => {
+      if (this.location === 'calc'){
+        this.validate()
+      }
+    })
   },
   beforeDestroy(){
     eventBus.$off("proceed", this.validate)
@@ -81,14 +88,16 @@ export default {
     validate() {
       this.$v.$touch()
       if (this.$v.$error && this.location !== 'calc') {
+        console.log('1')
         eventBus.$emit("validationError", this.$v.$error)
-      } else {
-        eventBus.$emit("calcValidationError", this.$v.$error)
+      } else if (this.$v.$error && this.location === 'calc'){
+        console.log('2')
+        eventBus.$emit("calcValidationError", {comp: this, err: this.$v.$error})
       }
     },
     reset() {
       this.$v.$reset()
-      eventBus.$emit("validationError", this.$v.$error)
+      // eventBus.$emit("validationError", this.$v.$error)
     },
   },
 }
