@@ -1,20 +1,30 @@
 <template lang="pug">
-  footer.footer
+  footer.footer#footer
     .container 
       .footer__wrapper
         .footer__block
           img.footer__logo(src="~@/assets/img/logo.svg", alt="med-tele.ru")
-        .footer__block
           ul.footer__menu
             li.footer__menu-item 
               a.footer__menu-link.link.btn_popup(@click.prevent="open('Policy')") Политика конфиденциальности
             li.footer__menu-item 
               a.footer__menu-link.link.btn_popup(@click.prevent="showLicences") Лицензия
+        .footer__block
           h6.footer__title Мы работаем со всеми регионами России
           p.footer__text Внимание! Данный сайт носит исключительно информационный характер и не является публичной офертой, определяемой положениями Статьи 437 Гражданского Кодекса РФ. (с) 2017-2021
         .footer__block
           .footer__contacts-wrapper
             contacts
+        .footer__block
+          .footer__contacts-wrapper
+            ul.contacts
+              li.contacts__item.contacts__item_phone 
+                a.link(href="tel:+79967917901") 8 (996) 791-79-01
+              li.contacts__item.contacts__item_email
+                a.link(href="mailto:info@pro-policy.ru") info@pro-policy.ru
+              li.contacts__item.contacts__item_thin Часы работы:
+              li.contacts__item.contacts__item_thin будние дни 8:00-21:00
+              li.contacts__item.contacts__item_thin выходные дни 9:00-19:00
     //- .container
     //-   span.text_green.text_center (c) Прополис 2021
       
@@ -51,14 +61,18 @@ export default {
     @media screen and (min-width: $tablets) {
       flex-direction: row;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
     }
   }
   &__block{
      @media screen and (min-width: $tablets){
        flex-direction: column;
        align-items: center;
-        flex-basis: 38%;
+       flex: 1 0 25%;
+       margin-top: 50px;
+       &:first-child{
+         margin-top: 0;
+       }
      }
   }
   &__logo{
@@ -68,6 +82,7 @@ export default {
   &__menu{
     list-style-type: none;
     padding-left: 0px;
+    margin-top: -2px;
   }
   &__menu-item{
     display: flex;

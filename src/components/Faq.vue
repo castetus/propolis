@@ -1,5 +1,5 @@
 <template lang="pug">
-  .block_white
+  .block_white#faq
     .container 
       h2.heading.heading_green частые вопросы
       .faq 

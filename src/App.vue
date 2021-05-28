@@ -3,11 +3,13 @@
     <app-header></app-header>
     <app-menu></app-menu>
     <main-slider></main-slider>
+    <banner></banner>
     <about></about>
     <opps></opps>
     <partners></partners>
     <div class="block_white" id="calculator">
       <div class="container">
+        <h2 class="heading heading_green">сравните и купите онлайн</h2>
         <h2 class="heading heading_green">Калькулятор</h2>
         <calculator></calculator>
       </div>
@@ -32,6 +34,7 @@
         <contact-form></contact-form>
       </div>
     </div>
+    <widget />
     <app-footer></app-footer>
     <div class="popup" :class="{popup_visible : isPopupVisible}">
       <button class="btn btn_close" @click="popupClose"></button>
@@ -46,6 +49,7 @@ import {eventBus} from './main.js'
 import AppHeader from './components/Header.vue'
 import AppMenu from './components/Menu.vue'
 import MainSlider from './components/MainSlider.vue'
+import Banner from './components/Banner.vue'
 import About from './components/About.vue'
 import Opps from './components/Opps.vue'
 import Calculator from './components/Calculator.vue'
@@ -62,6 +66,7 @@ import ThankyouBig from './components/ThankyouBig'
 import ThankyouCalc from './components/ThankyouCalc'
 import Policy from './components/Policy'
 import Licence from './components/Licence'
+import Widget from './components/Widget'
 
 export default {
   name: 'App',
@@ -69,6 +74,7 @@ export default {
     AppHeader,
     AppMenu,
     MainSlider,
+    Banner,
     About,
     Opps,
     Calculator,
@@ -84,7 +90,8 @@ export default {
     ThankyouBig,
     ThankyouCalc,
     Policy,
-    Licence
+    Licence,
+    Widget
   },
   data() {
     return {
@@ -95,9 +102,13 @@ export default {
       isForm: false,
       emailUrl: window.location.origin + '/mailer.php',
       apiUrl: window.location.origin + '/intApi.php',
+      widget: null,
     }
   },
   mounted(){
+    // const widgetScript = document.createElement('script')
+    // widgetScript.setAttribute('src', 'https://agents.polis.online/widget_v2.min.js')
+    // document.body.appendChild(widgetScript)
     eventBus.$on('popupOpen', (elem) => {
       this.popupOpen(elem)
     })

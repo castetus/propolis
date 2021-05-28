@@ -62,7 +62,7 @@ export default {
           },
           loop: true,
            autoplay: {
-            delay: 2500,
+            delay: 4500,
           },
     })
   },
@@ -79,7 +79,7 @@ export default {
 
 <style lang="scss">
 .main-slider{
-  margin-bottom: 16px;
+  // margin-bottom: 16px;
   max-height: 500px;
   &__slide{
     position: relative;

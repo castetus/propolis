@@ -3,8 +3,11 @@
     .container 
       .header 
         logo
+        .header__banner 
+          span.header__text Страхование ипотеки
+          span.header__text Выгода до 50%
         .header__cta 
-          a.btn.btn_outlined.btn_centered.btn_popup(data-target="#popup-form" @click="popupOpen('ContactForm')") заказать полис
+          a.btn.btn_outlined.btn_centered.btn_popup(data-target="#popup-form" @click="popupOpen('ContactForm')") заказать звонок
         ul.contacts 
           li.contacts__item.contacts__item_phone
             a.link(href="tel:+78003334749") 8 800 333-47-49
@@ -80,6 +83,7 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 10px;
   }
   &__note {
     display: none;
@@ -87,6 +91,17 @@ export default {
     @media screen and(min-width: $desktop) {
       display: block;
     }
+  }
+  &__banner{
+    display: flex;
+    flex-direction: column;
+  }
+  &__text{
+    color: $color-orange;
+    font-weight: 700;
+    margin-bottom: 5px;
+    font-size: 21px;
+    text-align: center;
   }
 }
 </style>

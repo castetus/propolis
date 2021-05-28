@@ -16,7 +16,14 @@ export default {
   data() {
     return {
       menuItems: {
-        'ОБ УСЛУГЕ': '#about', 'ПРЕИМУЩЕСТВА': '#opps', 'КАЛЬКУЛЯТОР': '#calc', 'НАШИ ПАРТНЕРЫ': '#partners', 'ОПЛАТА': '#payment', 'сотрудники': '#team', 'ОТЗЫВЫ': '#testimonials', 'ЧАСТЫЕ ВОПРОСЫ': '#faq'
+        'ОБ УСЛУГЕ': '#about',
+        'ПРЕИМУЩЕСТВА': '#opps',
+        'КАЛЬКУЛЯТОР': '#calculator',
+        'НАШИ ПАРТНЕРЫ': '#partners',
+        'ОПЛАТА': '#payment', 
+        'ЧАСТЫЕ ВОПРОСЫ': '#faq',
+        'осаго': '#osago',
+        'контакты': '#footer',
       },
       isVisible: false
     }

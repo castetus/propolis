@@ -3,7 +3,7 @@
     .calculator__inner-block
       h3.calculator__title Рассчитаем и оформим полис для клиентов любого банка. Просто оставьте заявку!
       a.btn.btn_orange.btn_centered(@click="popupOpen('ContactForm')") обратный звонок
-    .calculator__inner-block
+    .calculator__inner-block(v-if="loadedData")
       .input-block
         label(for="bank") Выберите банк
         select(name="bank" v-model="bank")
@@ -61,7 +61,9 @@
 import {required, email, integer} from "vuelidate/lib/validators"
 import {eventBus} from '../main'
 import {store} from '../store'
+import firebase from 'firebase/app'
 import DateInput from './DateInput'
+require('firebase/database')
 export default {
   name: 'Calculator',
   components: {
@@ -85,9 +87,11 @@ export default {
       email: '',
       correctData: true,
       resultText: '',
-      data: store,
+      data: null,
       sberEstateRate: 0.00225,
       checkEmail: false,
+      loadedData: false,
+      store: store
     }
   },
   validations() {
@@ -101,6 +105,9 @@ export default {
       email: this.checkEmail ? {email, required} : {}
     }
   },
+  created(){
+    this.getData();
+  },
   computed: {
     showTitle(){
       if (this.bank && this.bank != 19){
@@ -111,6 +118,21 @@ export default {
     }
   },
   methods: {
+    async getData(){
+      try {
+        const request = await (await firebase.database().ref().once('value')).val()
+        const data = await request;
+        const store = {
+          banks: data.banks,
+          insCompanies: JSON.parse(data.companies),
+          rates: JSON.parse(data.rates)
+        }
+        this.data = store;
+        this.loadedData = true;
+      } catch (error) {
+        console.log(error)
+      }
+    },
     popupOpen(elem){
       eventBus.$emit('popupOpen', elem)
     },
@@ -123,14 +145,13 @@ export default {
     },
     reset() {
       this.$v.$reset()
-      // eventBus.$emit("calcValidationError", this.$v.$error)
     },
     calculateAge(){
       const birthDate = this.$preparedData(this.birthDate).split('.').reverse()
       return Math.floor((new Date().getTime() - new Date(birthDate)) / (24 * 3600 * 365.25 * 1000)); 
     },
     calculateSberLifeCost(){
-      const sberRates = JSON.parse(this.data.sberRates)
+      const sberRates = JSON.parse(this.store.jsonRates)
       const ageRate = sberRates[this.calculateAge()]
       if (typeof ageRate !== 'undefined'){
         return Math.round(ageRate[this.gender].sber * this.debt)
@@ -140,9 +161,11 @@ export default {
     calculateSberPropertyCost(){
       return Math.round(this.sberEstateRate * this.debt)
     },
-    calculateLifeCost(){
+    calculateLifeCost(sum){
       const age = this.calculateAge()
       const rates = []
+      let debt = 0
+      
       this.data.insCompanies.forEach((company) => {
         if (!company.banks[this.bank]){
           return
@@ -154,66 +177,64 @@ export default {
           if (typeof ageRate !== 'undefined'){
             singleRate = ageRate[this.gender]
           }
-          rates.push({company: company.label, rate: Math.round(singleRate * this.debt)})
+          rates.push({company: company.label, rate: Math.round(singleRate * sum)})
         }
       })
+      if (this.bank === 19){
+        rates.push({company: 'Сбер', rate: this.calculateSberLifeCost()})
+      }
       return rates
     },
-    calculatePropertyCost(){
+    calculatePropertyCost(sum){
       const rates = []
       this.data.insCompanies.forEach(company => {
         
         if (company.banks[this.bank]){
           let singleRate = company.banks[this.bank].estate
           if (typeof singleRate !== 'undefined'){
-            rates.push({company: company.label, rate: Math.round(singleRate * this.debt)})
+            rates.push({company: company.label, rate: Math.round(singleRate * sum)})
           }
         }
       })
+      if (this.bank === 19){
+        rates.push({company: 'Сбер', rate: this.calculateSberPropertyCost()})
+      }
       return rates
     },
-    calculateTitleCost(){
+    calculateTitleCost(sum){
       const rates = []
       this.data.insCompanies.forEach(company => {
         if (company.banks[this.bank]){
           let singleRate = company.banks[this.bank].title
           if (typeof singleRate !== 'undefined'){
-            rates.push({company: company.label, rate: Math.round(singleRate * this.debt)})
+            rates.push({company: company.label, rate: Math.round(singleRate * sum)})
           }
         }
       })
       return rates
     },
     calculate() {
+      // this.bank === 19 ? this.debt : this.debt = this.debt * 1.1
       this.checkEmail = false
       this.validate()
       if (!this.correctData){
-        console.log('!correct')
         return
-      }
-      const results = {
-        lifeSum: 0,
-        lifeSumCompare: 0,
-        propertySum: 0,
-        propertySumCompare: 0,
-        stringLife: '',
-        stringProperty: '',
       }
 
       let lifeString = ''
       let propertyString = ''
       let titleString = ''
-      let summary = {}
+      let summary = new Map()
       let wholeRisksString = '<p><span class="text_green"><b>Итого по всем рискам:</b></span></p>'
 
       let insuranseSum = this.debt
-      if (this.bank !== '19'){
+      if (this.bank != '19'){
         insuranseSum = Math.floor(insuranseSum * 1.1)
       }
 
       if (this.life){
         lifeString += '<p><span class="text_green"><b>Страхование жизни:</b></span></p>'
-        this.calculateLifeCost().forEach((rate) => {
+        this.calculateLifeCost(insuranseSum).forEach((rate) => {
           let currency = ' руб.'
           if (rate.rate === 0){
             rate.rate = 'Страхование невозможно'
@@ -221,50 +242,57 @@ export default {
           }
           const result = `<p>${rate.company}: <b>${rate.rate}</b> ${currency}</p>`
           if (!isNaN(rate.rate)){
-            if (!summary[rate.company]){
-              summary[rate.company] = rate.rate
+            if (!summary.has(rate.company)){
+              summary.set(rate.company, rate.rate)
             } else {
-              summary[rate.company] += rate.rate
+              summary.set(rate.company, (summary.get(rate.company) + rate.rate))
             }
+          } else {
+            summary.set(rate.company, 'unable')
           }
           lifeString += result
         })
-        if (this.bank == 19){
-          let sberString = this.calculateSberLifeCost() === 0 ? 'Сбер: <b>Страхование невозможно</b>' : `<p>Сбер: <b>${this.calculateSberLifeCost()}</b> руб.`
-          lifeString += sberString
-          summary.Сбербанк = this.calculateSberLifeCost()
-        }
       }
       if (this.property){
         propertyString += '<p><span class="text_green"><b>Страхование имущества:</b></span></p>'
-        this.calculatePropertyCost().forEach((rate) => {
+        this.calculatePropertyCost(insuranseSum).forEach((rate) => {
           const result = `<p>${rate.company}: <b>${rate.rate}</b> руб.</p>`
           propertyString += result
-            if (!summary[rate.company]){
-              summary[rate.company] = rate.rate
+            if (!summary.has(rate.company)){
+              summary.set(rate.company, rate.rate)
+            } else if (summary.get(rate.company) === 'unable'){
+              summary.set(rate.company, 'unable')
             } else {
-              summary[rate.company] += rate.rate
+              summary.set(rate.company, (summary.get(rate.company) + rate.rate))
             }
         })
-        if (this.bank == 19){
-          propertyString += `<p>Сбер: <b>${this.calculateSberPropertyCost()}</b> руб.`
-          summary.Сбербанк += this.calculateSberPropertyCost()
-        }
       }
       if (this.title){
         titleString += '<p><span class="text_green"><b>Страхование титула:</b></span></p>'
-        this.calculatePropertyCost().forEach((rate) => {
+        this.calculateTitleCost(insuranseSum).forEach((rate) => {
           const result = `<p>${rate.company}: <b>${rate.rate}</b> руб.</p>`
           titleString += result
+            if (!summary.has(rate.company)){
+              summary.set(rate.company, rate.rate)
+            } else if (summary.get(rate.company) === 'unable'){
+              summary.set(rate.company, 'unable')
+            } else {
+              summary.set(rate.company, (summary.get(rate.company) + rate.rate))
+            }
         })
       }
-
       const insuranseSumString = `<p>Страховая сумма по требованию банка: <b>${insuranseSum}</b> руб.</p>`
 
-      if (Object.keys(summary).length !== 0){
-        for (let company in summary){
-          wholeRisksString += `<p>${company}: <b>${summary[company]}</b> руб.</p>`
+      if (summary.size !== 0){
+        for (let [key, value] of summary.entries()){
+          if (value !== 'unable'){
+            wholeRisksString += `<p>${key}: <b>${value}</b> руб.</p>`
+          }
         }
+      }
+
+      if (wholeRisksString === '<p><span class="text_green"><b>Итого по всем рискам:</b></span></p>'){
+        wholeRisksString = ''
       }
       
       this.resultText = insuranseSumString + lifeString + propertyString + titleString + wholeRisksString

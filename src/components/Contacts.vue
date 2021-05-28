@@ -9,7 +9,9 @@
           br
           span ОГРН: 1207800065252
           br
-          span Санкт-Петербург, ул. Большая Пушкарская, д.17, оф.3
+          span Санкт-Петербург, 
+          br
+          span ул. Большая Пушкарская, д.17, оф.3
 </template>
 
 <script>
@@ -29,7 +31,8 @@ export default {
   font-weight: 600;
   font-size: 14px;
   line-height: 16px;
-  margin-top: 16px;
+  // margin-top: 16px;
+  margin-block-start: 0;
   &__item {
     position: relative;
     margin-bottom: 5px;
@@ -62,6 +65,21 @@ export default {
         @media screen and (min-width: $tablets) {
           left: 60px;
         }
+      }
+    }
+    &_email{
+      padding-left: 14px;
+      & .link{
+        position: relative;
+        &:before {
+        content: "";
+        background: url("~@/assets/img/icons/email.svg") center no-repeat;
+        background-size: contain;
+        position: absolute;
+        left: -20px;
+        width: 15px;
+        height: 15px;
+      }
       }
     }
     &_thin{

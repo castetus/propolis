@@ -12,7 +12,7 @@ export default {
   name: 'Policy',
   data() {
     return {
-      basePath: 'policy_pages-to-jpg-000'
+      basePath: 'policy_page-000'
     }
   },
   mounted() {

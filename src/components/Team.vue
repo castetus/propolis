@@ -1,7 +1,7 @@
 <template lang="pug">
   .block_pink#team
     .container
-      .h2.heading.heading_2.heading_green сотрудники
+      .h2.heading.heading_2.heading_green специалисты
       .team.swiper-container
         .swiper-wrapper
           .team__item.swiper-slide
@@ -9,8 +9,8 @@
               .team__img-block
                 img.team__avatar(src="../assets/img/team_1.jpg")
               .team__content
-                h3.team__position Ваш специалист
-                h4.team__name Антон Храмов
+                h3.team__position Антон Храмов
+                //- h4.team__name 
                 p.team__text Выпускник Санкт-Петербургского государственного Инженерно-Экономического университета (ИНЖЭКОН), работал агентом в "Петербургской недвижимости", руководителем корпоративных проектов в IT-компании Рексофт. Основатель первой в России велокурьерской службы Prompt Delivery.
               .btn.btn_centered.btn_orange.team__btn(@click="popupOpen('ContactForm')") заказать полис
 </template>
@@ -96,6 +96,7 @@ export default {
     }
     &__text{
       font-size: 14px;
+      margin-top: 20px;
     }
     &__btn{
       @media screen and (min-width: $tablets){
