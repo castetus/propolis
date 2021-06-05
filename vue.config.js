@@ -19,6 +19,7 @@ rule.use('style-resource')
     ],
   })
 }
+
 // module.exports = {
 //   pluginOptions: {
 //     'style-resources-loader': {

@@ -199,7 +199,6 @@ export default {
       if (this.bank === 19){
         rates.push({company: 'Сбер', rate: this.calculateSberPropertyCost()})
       }
-      return rates
     },
     calculateTitleCost(sum){
       const rates = []

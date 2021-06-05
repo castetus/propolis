@@ -88,10 +88,8 @@ export default {
     validate() {
       this.$v.$touch()
       if (this.$v.$error && this.location !== 'calc') {
-        console.log('1')
         eventBus.$emit("validationError", this.$v.$error)
       } else if (this.$v.$error && this.location === 'calc'){
-        console.log('2')
         eventBus.$emit("calcValidationError", {comp: this, err: this.$v.$error})
       }
     },

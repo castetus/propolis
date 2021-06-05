@@ -6,6 +6,10 @@ import Vuelidate from 'vuelidate'
 import 'swiper/css/swiper.css'
 import firebase from "firebase/app";
 
+Vue.config.ignoredElements = [
+  'polis-online-widget-osago'
+];
+
 const firebaseConfig = {
   apiKey: "AIzaSyBnAsRHrlnjU1m3bUNWR76rGMSOXMZtjoM",
   authDomain: "insurance-calculator-ba1c5.firebaseapp.com",

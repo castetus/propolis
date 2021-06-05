@@ -15,7 +15,7 @@
         .swiper-pagination(slot="pagination")
         .slider-button.slider-button_prev.main-slider__prev
         .slider-button.slider-button_next.main-slider__next
-      a.btn.btn_orange.main-slider__bottom-btn.btn_popup.btn_centered(href="#calculator") рассчитать стоимость
+      a.btn.btn_orange.main-slider__bottom-btn.btn_popup(href="#calculator") рассчитать стоимость
 </template>
 
 <script>
@@ -133,6 +133,7 @@ export default {
     }
   }
   &__bottom-btn{
+    margin: 20px auto;
     @media screen and (min-width: $desktop){
       display: none!important;
     }

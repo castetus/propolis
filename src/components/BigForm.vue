@@ -341,7 +341,6 @@ export default {
           }
         ]
       }
-      console.log(data)
       eventBus.$emit('sendForm', data)
     }
   }

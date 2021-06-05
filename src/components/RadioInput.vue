@@ -43,9 +43,6 @@ export default {
   validations: {
     value: {required: required},
   },
-  mounted() {
-    // console.log(this.variants)
-  }
 }
 </script>
 

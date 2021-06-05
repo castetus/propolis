@@ -32,6 +32,7 @@
       <div class="container">
         <h2 class="heading heading_green">получить консультацию</h2>
         <contact-form></contact-form>
+        <p class="text_center">По вопросам связанным с покупкой недвижимости можете обратиться к <a class="link link_underlined link_green" href="https://pro-consalt.com/uslugi/" target="blank">нашим партнёрам</a></p>
       </div>
     </div>
     <widget />
@@ -132,7 +133,6 @@ export default {
       this.sendCalc(data)
     })
     eventBus.$on('sendForm', (data) => {
-      console.log(data)
       this.sendForm(data)
     })
     eventBus.$on('openPolicy', () => {
@@ -162,7 +162,6 @@ export default {
         })
         const result = await request.text()
         if (request.ok){
-          console.log(result)
           this.popupOpen('ThankyouCalc')
         }
       } catch (error) {
@@ -181,7 +180,6 @@ export default {
         })
         const result = await request.text()
         if (request.ok){
-          console.log(result)
           this.popupOpen(elem)
         }
       } catch (error) {
@@ -297,8 +295,15 @@ export default {
   .link_underlined{
     cursor: pointer;
   }
+  .link_green{
+    color: #069E2D;
+  }
   .thankyou{
     padding-top: 30px;
+  }
+  .text_center{
+    text-align: center;
+    margin-top: 30px;
   }
 
 </style>
