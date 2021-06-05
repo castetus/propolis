@@ -1,5 +1,10 @@
 # propolis
 
+Landing page for insurance company, Vue.js + vuex + firebase.
+Features: 
+1. Insurance cost calculator with coeffs from backend
+2. Custom AmoCRM integration
+
 ## Project setup
 ```
 npm install
@@ -19,6 +24,3 @@ npm run build
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
